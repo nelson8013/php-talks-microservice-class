@@ -7,3 +7,6 @@ It is a simple e-commerce Laravel application with 3 services. Each service has 
 3. The Checkout Service.
 
 
+## POSTMAN COLLECTION
+
+[Postman Collection](https://api.postman.com/collections/11058525-7379fc15-203a-42b5-89fe-b4cc643ee459?access_key=PMAT-01HN8X34ZJSMPCH05S1K44SK0V)
