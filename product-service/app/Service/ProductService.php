@@ -17,6 +17,11 @@ class ProductService
     return $this->productRepository->save($data);
  }
 
+ public function updateProduct(int $productId, ProductRequest $request){
+  return $this->productRepository->update($productId, $request);
+}
+
+
  public function getProducts(){
   try{
     return $this->productRepository->findAll();
