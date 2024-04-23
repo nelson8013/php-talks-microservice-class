@@ -6,6 +6,7 @@ use App\Exceptions\ProductNotFoundException;
 use App\Repository\ProductRepository;
 use App\Http\Requests\ProductRequest;
 use App\Interfaces\ProductServiceInterface;
+use App\Jobs\ProductCreated;
 
 class ProductService 
 {
@@ -13,8 +14,9 @@ class ProductService
  public function __construct(private ProductRepository $productRepository){}
 
  public function create(ProductRequest $request){
-    $data = ['name' => $request->name,'description' => $request->description,'price' => $request->price];
-    return $this->productRepository->save($data);
+    $data    = ['name' => $request->name,'description' => $request->description,'price' => $request->price];
+    $product = $this->productRepository->save($data);
+    return $product;
  }
 
  public function updateProduct(int $productId, ProductRequest $request){
@@ -84,6 +86,22 @@ class ProductService
 }
 
  public function existsById(int $id){
-   return $this->productRepository->existsById($id);
+  try{
+      return $this->productRepository->existsById($id);
+  
+  }catch (ProductNotFoundException $exception) {
+
+    return response()->json([
+        'error' => 'Product Does not Exist',
+        'message' => $exception->getMessage(),
+    ], 404);
+
+  } catch (\Exception $exception) {
+    
+      return response()->json([
+          'error' => 'Product Not Found',
+          'message' => $exception->getMessage(),
+      ], 500);
+  }
  }
 }

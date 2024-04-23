@@ -37,9 +37,16 @@ class ProductController extends Controller
         return response()->json(['data' => $product, 'status' => true, 'message' => 'product updated successfully' ], 201);
     }
 
-    public function doesProductExist(int $id) : bool
+    public function doesProductExist(int $id) : bool|JsonResponse
     {
-        return $this->productService->existsById($id);
+        $product = $this->productService->existsById($id);
+        
+        if($product == 1){
+            return response()->json(['success' => true, 'message' => "Product exists",], 200);
+         }
+         else{
+            return response()->json(['success' => false, 'message' => "Product does not exists",], 404);
+         }
     }
 
     public function productPrice(int $id)
