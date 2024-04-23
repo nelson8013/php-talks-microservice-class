@@ -31,7 +31,7 @@ class InventoryController extends Controller
         if($inventory != false){
             return response()->json(['data' => $inventory, 'status' => true, 'message' => 'Inventory added successfully' ], 201);
         }
-        return response()->json(['data' => $inventory, 'status' => false, 'message' => 'Inventory was not added. Inventory may already exist.' ], 400);
+        return response()->json(['data' => $inventory, 'status' => false, 'message' => 'Inventory was not added. Inventory may already exist, or the product Id may not exist.' ], 400);
     }
 
     public function updateProductQuantity(ProductQuantityRequest $request) : JsonResponse
@@ -42,6 +42,6 @@ class InventoryController extends Controller
 
     public function getProductQuantity(int $productId) 
     {
-        return  $this->inventoryService->getProductQuantity($productId);
+        return $this->inventoryService->getProductQuantity($productId);
     }
 }

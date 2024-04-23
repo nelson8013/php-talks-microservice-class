@@ -11,5 +11,5 @@ class Inventory extends Model
 
     protected $guarded;
 
-    protected $table = "inventories";
+    protected $table = "inventory";
 }

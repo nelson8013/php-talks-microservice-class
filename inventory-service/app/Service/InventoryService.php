@@ -5,6 +5,8 @@ namespace App\Service;
 use App\Repository\InventoryRepository;
 use App\Http\Requests\InventoryRequest;
 use App\Http\Requests\ProductQuantityRequest;
+use App\Exceptions\ProductNotFoundException;
+
 
 class InventoryService
 {
@@ -18,7 +20,7 @@ class InventoryService
  public function create(InventoryRequest $request){
     $response  = \Http::get("http://127.0.0.1:8000/api/product/exists/{$request->product_id}")->json();
 
-    if( $response ==  1) {
+    if( $response["success"]) {
       if(!$this->doesInventoryAlreadyExist($request->product_id)){
        $data = ['product_id' => $request->product_id, 'quantity' => $request->quantity,'is_available' => $request->is_available];
        return $this->inventoryRepository->save($data);
@@ -34,7 +36,25 @@ class InventoryService
  }
 
  public function getProductQuantity(int $productId){
-   return $this->inventoryRepository->findProductQuantity($productId);
+  try{
+      $quantity = $this->inventoryRepository->findProductQuantity($productId);
+
+      return response()->json(['success' => true, 'data' => $quantity,'message' => "Product Quantity retrieved successfully",], 200);
+
+  }catch (ProductNotFoundException $exception) {
+
+    return response()->json([
+        'error' => 'Product Not Found',
+        'message' => $exception->getMessage(),
+    ], 404);
+
+  } catch (\Exception $exception) {
+    
+      return response()->json([
+          'error' => 'Product Not Found',
+          'message' => $exception->getMessage(),
+      ], 500);
+  }
  }
 
  public function getInventories(){
