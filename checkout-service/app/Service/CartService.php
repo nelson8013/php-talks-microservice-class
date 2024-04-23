@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\ProductOutOfStockException;
+use App\Exceptions\EmptyCartException;
 use App\Exceptions\ProductQuantityNotSufficientException;
 use App\Interfaces\CartServiceInterface;
 use App\Repository\CartRepository;
@@ -32,7 +33,7 @@ class CartService implements CartServiceInterface {
        $productIdsAndQuantities = $request->json()->all();
        
 
-       if (empty($productIdsAndQuantities)) throw new \InvalidArgumentException("Cart is empty. Please add items to proceed");
+       if (empty($productIdsAndQuantities)) throw new EmptyCartException();
 
        $results     = [];
        $results     = $this->checkIfProductsExistsAndGetQuantity($productIdsAndQuantities);
@@ -56,7 +57,7 @@ class CartService implements CartServiceInterface {
          $requestedQuantity = $productIdAndQuantities[$productId];
          if ($availableQuantity >= $requestedQuantity) {
 
-             $productPrice = \Http::get("127.0.0.1:8000/api/product/price/{$productId}")->json();
+             $productPrice = \Http::get(`127.0.0.1:8000/api/product/price/{$productId}`)->json();
 
              $totalAmount[$productId]  = $requestedQuantity * $productPrice;
          }else {
@@ -81,10 +82,10 @@ class CartService implements CartServiceInterface {
      
      foreach($productIdsAndQuantities as $productId => $quantity) {
       $productResponse =  \Http::get("http://127.0.0.1:8000/api/product/exists/{$productId}")->json();
+      return $productResponse;
+      if( $productResponse['success']) {
 
-      if($productResponse == 1){
-
-         $prodQuantityCheckResponse =  \Http::get("http://127.0.0.1:8002/api/inventory/quantity/{$productId}")->json();
+         $prodQuantityCheckResponse =  \Http::get("http://127.0.0.1:8001/api/inventory/quantity/{$productId}")->json();
          $results[$productId] =  $prodQuantityCheckResponse;
       
       }else{

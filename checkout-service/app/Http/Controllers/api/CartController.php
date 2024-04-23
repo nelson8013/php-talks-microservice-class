@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\AddToCartRequest;
 use App\Service\CartService;
 
 class CartController extends Controller
@@ -13,7 +14,7 @@ class CartController extends Controller
 
     public function __construct(private CartService $cartService){}
 
-    public function addToCart(Request $request) : JsonResponse {
+    public function addToCart(AddToCartRequest $request) : JsonResponse {
         $this->cartService->addToCart($request);
         return response()->json(['message' => 'Cart added successfully'],201);
     }
