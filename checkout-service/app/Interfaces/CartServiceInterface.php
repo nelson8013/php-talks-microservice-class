@@ -19,6 +19,7 @@ interface CartServiceInterface {
  public function calculateTotalAmountOfCart(array $totalAmount);
 
  public function checkIfProductsExistsAndGetQuantityFromRequest(array $productIdsAndQuantities);
- public  function addCartItems(array $amounts, array $productIdsAndQuantities, Cart $cart);
+ public function addCartItems(array $amounts, array $productIdsAndQuantities, Cart $cart);
+ public function subtractRequestedQuantityFromInventory(int $productId, int $requestedQuantity);
 
 }

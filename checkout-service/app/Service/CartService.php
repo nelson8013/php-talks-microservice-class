@@ -89,11 +89,11 @@ class CartService  implements CartServiceInterface {
    
     
    
-   public function calculateTotalAmountOfEachProductInCart(array $requestedQuantitiesArray, array $productIdAndQuantities){
+   public function calculateTotalAmountOfEachProductInCart(array $requestedQuantitiesArray, array $productIdsAndQuantities){
     
       $totalAmount = [];
 
-     foreach($productIdAndQuantities as $productId => $requestedQuantity){
+     foreach($productIdsAndQuantities as $productId => $requestedQuantity){
 
          $quantity = $requestedQuantitiesArray[$productId];
 
@@ -132,10 +132,19 @@ class CartService  implements CartServiceInterface {
        'price'      => $amt
       ];
 
+      
       $this->cartItemRepository->save($cartItem);
-   
-      }
+      $this->subtractRequestedQuantityFromInventory($productId, $requestedQuantity);
     }
+   }
+
+    public function subtractRequestedQuantityFromInventory(int $productId, int $requestedQuantity) : void
+    {
+
+       \Http::get("127.0.0.1:8001/api/inventory/subtract-quantity/$productId/$requestedQuantity")->json();
+             
+    }
+
 
     
 }
