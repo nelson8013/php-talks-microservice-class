@@ -10,6 +10,8 @@ use App\Exceptions\ProductQuantityNotSufficientException;
 use App\Interfaces\CartServiceInterface;
 use App\Repository\CartRepository;
 use App\Repository\CartItemRepository;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 
@@ -54,7 +56,7 @@ class CartService  implements CartServiceInterface {
       $results = [];
  
       foreach($productIdsAndQuantities as $productId => $quantity) {
-       $productResponse =  \Http::get("http://127.0.0.1:8000/api/product/exists/{$productId}")->json();
+       $productResponse =  Http::get("http://127.0.0.1:8000/api/product/exists/{$productId}")->json();
  
        if( $productResponse['success']) {
  
@@ -71,15 +73,15 @@ class CartService  implements CartServiceInterface {
       
       foreach($productIdsAndQuantities as $productId => $quantity) {
 
-         $checkAvailableProductResponse =  \Http::get("http://127.0.0.1:8001/api/inventory/quantity/{$productId}")->json();
+         $checkAvailableProductResponse =  Http::get("http://127.0.0.1:8001/api/inventory/quantity/{$productId}")->json();
 
          if( $checkAvailableProductResponse['data'] >= $quantity) {
   
             return true;
 
          }else{
-            \Log::info("AVAILABLE QUANTITY", $checkAvailableProductResponse['data']);
-            \Log::info("REQUESTED QUANTITY", $quantity);
+            Log::info("AVAILABLE QUANTITY", $checkAvailableProductResponse['data']);
+            Log::info("REQUESTED QUANTITY", $quantity);
             return false;
          }
       }
@@ -89,7 +91,7 @@ class CartService  implements CartServiceInterface {
    
     
    
-   public function calculateTotalAmountOfEachProductInCart(array $requestedQuantitiesArray, array $productIdsAndQuantities){
+    public function calculateTotalAmountOfEachProductInCart(array $requestedQuantitiesArray, array $productIdsAndQuantities){
     
       $totalAmount = [];
 
@@ -99,7 +101,7 @@ class CartService  implements CartServiceInterface {
 
          if ($quantity >= $requestedQuantity) {
 
-             $productPrice = \Http::get("127.0.0.1:8000/api/product/price/{$productId}")->json();
+             $productPrice = Http::get("127.0.0.1:8000/api/product/price/{$productId}")->json();
              
 
              $totalAmount[$productId]  = $requestedQuantity * $productPrice;
@@ -110,7 +112,7 @@ class CartService  implements CartServiceInterface {
      }
 
      return $totalAmount;
-   }
+    }
 
 
     public function calculateTotalAmountOfCart(array $totalAmount){
@@ -122,29 +124,31 @@ class CartService  implements CartServiceInterface {
     }
 
     public  function addCartItems(array $amounts, array $productIdsAndQuantities, Cart $cart){
-     foreach($amounts as $productId => $amt){
-      $requestedQuantity = $productIdsAndQuantities[$productId];
-   
-      $cartItem = [
-       'cart_id'    => $cart->id,
-       'product_id' => $productId,
-       'quantity'   => $requestedQuantity,
-       'price'      => $amt
-      ];
-
+      foreach($amounts as $productId => $amt){
+         $requestedQuantity = $productIdsAndQuantities[$productId];
       
-      $this->cartItemRepository->save($cartItem);
-      $this->subtractRequestedQuantityFromInventory($productId, $requestedQuantity);
+         $cartItem = [
+         'cart_id'    => $cart->id,
+         'product_id' => $productId,
+         'quantity'   => $requestedQuantity,
+         'price'      => $amt
+         ];
+
+         
+         $this->cartItemRepository->save($cartItem);
+         $this->subtractRequestedQuantityFromInventory($productId, $requestedQuantity);
+      }
     }
-   }
 
     public function subtractRequestedQuantityFromInventory(int $productId, int $requestedQuantity) : void
     {
 
-       \Http::get("127.0.0.1:8001/api/inventory/subtract-quantity/$productId/$requestedQuantity")->json();
+       Http::get("127.0.0.1:8001/api/inventory/subtract-quantity/$productId/$requestedQuantity")->json();
              
     }
 
+
+    
 
     
 }
