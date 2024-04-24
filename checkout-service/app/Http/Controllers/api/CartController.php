@@ -14,7 +14,20 @@ class CartController extends Controller
 
     public function __construct(private CartService $cartService){}
 
-    public function addToCart(AddToCartRequest $request) : JsonResponse {
+    /* @Request payload
+                {           
+                 "3": 3,
+                 "2": 4,
+                 "1": 2
+                }
+                {
+                 "product_id": quantity,
+                 "product_id": quantity,
+                 "product_id": quantity,
+                }
+
+    */
+    public function addToCart(Request $request) : JsonResponse {
         $this->cartService->addToCart($request);
         return response()->json(['message' => 'Cart added successfully'],201);
     }

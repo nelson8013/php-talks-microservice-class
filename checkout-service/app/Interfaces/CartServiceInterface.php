@@ -14,10 +14,11 @@ interface CartServiceInterface {
  public function addToCart(Request $request);
 
  public function calculateTotalAmountOfEachProductInCart(array $results, array $productIdAndQuantities);
+ public function checkIfRequestedQuantityIsLessThanOrEqualToAvailableQuantity(array $productIdsAndQuantities);
 
  public function calculateTotalAmountOfCart(array $totalAmount);
 
- public function checkIfProductsExistsAndGetQuantity(array $productIdsAndQuantities);
+ public function checkIfProductsExistsAndGetQuantityFromRequest(array $productIdsAndQuantities);
  public  function addCartItems(array $amounts, array $productIdsAndQuantities, Cart $cart);
 
 }
