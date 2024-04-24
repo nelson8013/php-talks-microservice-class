@@ -27,4 +27,5 @@ Route::controller(InventoryController::class)->prefix('inventory')->group( funct
     Route::post('add',                 'addInventory')->name('add');
     Route::put('update',               'updateProductQuantity')->name('update');
     Route::get('quantity/{productId}', 'getProductQuantity')->name('quantity');
+    Route::get('subtract-quantity/{productId}/{quantityToSubtract}', 'subtractProductQuantity')->name('subtract-quantity');
 });

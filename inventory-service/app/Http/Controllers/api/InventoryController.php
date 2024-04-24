@@ -44,4 +44,14 @@ class InventoryController extends Controller
     {
         return $this->inventoryService->getProductQuantity($productId);
     }
+
+    public function subtractProductQuantity(int $productId, int $quantityToSubtract) {
+        $subtractOperation = $this->inventoryService->subtractQuantityAndUpdate($productId, $quantityToSubtract);
+
+        if($subtractOperation != false){
+            return response()->json(['data' => $subtractOperation, 'status' => true, 'message' => 'Quantity subtracted successfully' ], 201);
+        }
+        return response()->json(['data' => $subtractOperation, 'status' => false, 'message' => 'Quantity was not subtracted. The requested quantity may be more than available quantity, or the product Id may not exist.' ], 400);
+ 
+    }
 }

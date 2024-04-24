@@ -6,6 +6,7 @@ use App\Repository\InventoryRepository;
 use App\Http\Requests\InventoryRequest;
 use App\Http\Requests\ProductQuantityRequest;
 use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\InsufficientQuantityException;
 
 
 class InventoryService
@@ -14,7 +15,8 @@ class InventoryService
  public function __construct(private InventoryRepository $inventoryRepository){}
 
 
- public function doesInventoryAlreadyExist(int $id){
+ public function doesInventoryAlreadyExist(int $id) : bool
+ {
   return $this->inventoryRepository->existsByProductId($id);
  }
  public function create(InventoryRequest $request){
@@ -26,7 +28,7 @@ class InventoryService
        return $this->inventoryRepository->save($data);
       }
       else{
-       return false;
+       return true;
       }
 
     }else{
@@ -68,5 +70,33 @@ class InventoryService
  public function updateProductQuantity(ProductQuantityRequest $request){
   return $this->inventoryRepository->updateProductInventory($request->productId, $request->quantity);
  }
+
+ /**
+     * Subtract a quantity from a row in the inventory table before updating it.
+     *
+     * @param int $productId
+     * @param int $quantityToSubtract
+     * @return bool Whether the operation was successful or not
+     */
+  public function subtractQuantityAndUpdate(int $productId, int $quantityToSubtract): bool
+  {
+      try {
+          $currentQuantity = $this->inventoryRepository->findProductQuantity($productId);
+
+          if ($currentQuantity >= $quantityToSubtract) {
+              $newQuantity = $currentQuantity - $quantityToSubtract;
+
+              $this->inventoryRepository->updateProductInventory($productId, $newQuantity);
+
+              return true;
+          } else {
+              throw new InsufficientQuantityException("Insufficient quantity available for product ID: {$productId}");
+          }
+      } catch (ProductNotFoundException $exception) {
+        throw $exception;
+      } catch (\Exception $exception) {
+        throw $exception;
+      }
+  }
 
 }

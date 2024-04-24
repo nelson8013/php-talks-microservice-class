@@ -9,7 +9,11 @@ class Inventory extends Model
 {
     use HasFactory;
 
-    protected $guarded;
-
     protected $table = "inventory";
+    
+    protected $fillable = [
+        'product_id',
+        'quantity',
+        'is_available'
+    ];
 }
