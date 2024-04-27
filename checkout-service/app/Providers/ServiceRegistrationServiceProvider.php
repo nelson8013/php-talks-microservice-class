@@ -32,12 +32,12 @@ class ServiceRegistrationServiceProvider extends ServiceProvider
             remember to Move the service registrationlogic out of the service boot process and into a separate command or job
             because no service will start if the gateway service is down. 
         */ 
-        Log::info("ServiceRegistrationServiceProvider booting...");
+        Log::info("Checkout Service ServiceRegistrationServiceProvider booting...");
 
         $serviceRegistrationService = $this->app->make(ServiceRegistrationService::class);
         $serviceRegistrationService->registerService();
 
-        Log::info("ServiceRegistrationServiceProvider booted.");
+        Log::info("Checkout Service ServiceRegistrationServiceProvider booted.");
 
     }
 }

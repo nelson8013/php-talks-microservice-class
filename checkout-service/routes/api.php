@@ -18,25 +18,9 @@ use App\Http\Controllers\api\CartController;
 
 
 
-Route::controller(CartController::class)->prefix('cart')->group( function(){
+Route::controller(CartController::class)->prefix('checkout')->group( function(){
+    Route::get('health',  'health')->name('health');
     Route::post('add',  'addToCart')->name('add');
     Route::get('carts', 'carts')->name('carts');
     Route::get('{id}',  'cart')->name('cart');
 });
-
-// $router->group(['prefix' => 'api', 'middleware' => ['client.credentials']], function () use ($router) {
-//     $router->group(['prefix' => 'product'], function () use ($router) {
-//         $router->get('/', ['uses' => 'ProductController@index']);
-//         $router->post('/', ['uses' => 'ProductController@store']);
-//         $router->get('/{product}', ['uses' => 'ProductController@show']);
-//         $router->patch('/{product}', ['uses' => 'ProductController@update']);
-//         $router->delete('/{product}', ['uses' => 'ProductController@destroy']);
-//     });
-//     $router->group(['prefix' => 'order'], function () use ($router) {
-//         $router->get('/', ['uses' => 'OrderController@index']);
-//         $router->post('/', ['uses' => 'OrderController@store']);
-//         $router->get('/{order}', ['uses' => 'OrderController@show']);
-//         $router->patch('/{order}', ['uses' => 'OrderController@update']);
-//         $router->delete('/{order}', ['uses' => 'OrderController@destroy']);
-//     });
-// });

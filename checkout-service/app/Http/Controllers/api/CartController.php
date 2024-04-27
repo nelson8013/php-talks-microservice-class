@@ -7,12 +7,27 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddToCartRequest;
 use App\Service\CartService;
+use App\Service\HealthService;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 
 class CartController extends Controller
 {
     
 
-    public function __construct(private CartService $cartService){}
+    public function __construct(private CartService $cartService, private HealthService $healthService){}
+
+
+    public function health()
+    {
+        // TODO: @Nelson, Perform any necessary health checks
+        // For example, check database connectivity, external dependencies, etc.
+
+        $status = $this->healthService->health();
+        return response()->json(['status' => $status, 'message' => 'Service status retrieved successfully'],201);
+    }
+
 
     /* @Request payload
                 {           
