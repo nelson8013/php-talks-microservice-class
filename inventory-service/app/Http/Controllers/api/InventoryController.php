@@ -5,12 +5,24 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Service\InventoryService;
+use App\Service\HealthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ProductQuantityRequest;
 
 class InventoryController extends Controller
 {
-    public function __construct(private InventoryService $inventoryService){}
+    public function __construct(private InventoryService $inventoryService, private HealthService $healthService){}
+
+
+    public function health()
+    {
+        // TODO: @Nelson, Perform any necessary health checks
+        // For example, check database connectivity, external dependencies, etc.
+
+        $status = $this->healthService->health();
+        return response()->json(['status' => $status, 'message' => 'Service status retrieved successfully'],201);
+    }
+
 
     public function inventory(int $id) : JsonResponse
     {

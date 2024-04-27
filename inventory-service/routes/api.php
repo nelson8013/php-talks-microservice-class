@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::controller(InventoryController::class)->prefix('inventory')->group( function(){
+    Route::get('health',               'health')->name('health');
     Route::get('inventory/{id}',       'inventory')->name('inventory');
     Route::get('inventories',          'inventories')->name('inventories');
     Route::post('add',                 'addInventory')->name('add');
