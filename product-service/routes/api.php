@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::controller(ProductController::class)->prefix('product')->group( function(){
+    Route::get('health',       'health')->name('health');
     Route::get('product/{id}', 'product')->name('product');
     Route::get('products',     'products')->name('products');
     Route::post('add',         'addProduct')->name('add');

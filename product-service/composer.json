@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "product-service",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "This is the product-service for the php-talks-ecommerce application",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

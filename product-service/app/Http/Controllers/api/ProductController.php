@@ -5,11 +5,22 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Service\ProductService;
+use App\Service\HealthService;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
-    public function __construct(private ProductService $productService){}
+    public function __construct(private ProductService $productService, private HealthService $healthService){}
+
+
+    public function health()
+    {
+        // TODO: @Nelson, Perform any necessary health checks
+        // For example, check database connectivity, external dependencies, etc.
+
+        $status = $this->healthService->health();
+        return response()->json(['status' => $status, 'message' => 'Service status retrieved successfully'],201);
+    }
 
     public function product(int $id) : JsonResponse
     {
