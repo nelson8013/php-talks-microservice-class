@@ -16,10 +16,11 @@ class ProductRepository
    return Product::create($product);
  }
 
- public function update(int $id, ProductRequest $request) : bool
+ public function update(int $id, ProductRequest|array $request) : bool | Product
  {
-   $product = $this->findById($id);
-   return $product->update($request->all());
+    $product = $this->findById($id);
+    $product->update($request->all());
+    return $product;
  }
 
  public function findById(int $id) : Product
@@ -40,5 +41,17 @@ class ProductRepository
  public function findAll() : Product|Collection|array
  {
   return Product::all();
+ }
+
+ public function delete(int $id) :  ?Product
+ {
+  $product = $this->findById($id);
+
+  if ($product) {
+    $deleted = $product->delete();
+    if($deleted) return $product;
+  }
+
+    return null;
  }
 }

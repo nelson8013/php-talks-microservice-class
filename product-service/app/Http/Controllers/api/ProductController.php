@@ -64,4 +64,16 @@ class ProductController extends Controller
     {
         return  $this->productService->getProductPrice($id);
     }
+
+    public function deleteProduct(int $id)
+    {
+        $product = $this->productService->delete($id);
+
+        if($product){
+            return response()->json(['success' => true, 'message' => "Product deleted successfully!",], 200);
+         }
+         else{
+            return response()->json(['success' => false, 'message' => "Product wasn't deleted",], 404);
+         }
+    }
 }

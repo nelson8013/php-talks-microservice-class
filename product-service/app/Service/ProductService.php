@@ -7,6 +7,8 @@ use App\Repository\ProductRepository;
 use App\Http\Requests\ProductRequest;
 use App\Interfaces\ProductServiceInterface;
 use App\Jobs\ProductCreated;
+use App\Jobs\ProductUpdated;
+use App\Jobs\ProductDeleted;
 
 class ProductService 
 {
@@ -16,11 +18,14 @@ class ProductService
  public function create(ProductRequest $request){
     $data    = ['name' => $request->name,'description' => $request->description,'price' => $request->price];
     $product = $this->productRepository->save($data);
+    ProductCreated::dispatch($product->toArray());
     return $product;
  }
 
  public function updateProduct(int $productId, ProductRequest $request){
-  return $this->productRepository->update($productId, $request);
+  $product = $this->productRepository->update($productId, $request);
+  ProductUpdated::dispatch($product->toArray());
+  return $product;
 }
 
 
@@ -103,5 +108,12 @@ class ProductService
           'message' => $exception->getMessage(),
       ], 500);
   }
+ }
+
+ public function delete(int $id)
+ {
+  $product = $this->productRepository->delete($id);
+  ProductDeleted::dispatch($product->toArray());
+  return $product;
  }
 }

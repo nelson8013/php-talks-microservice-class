@@ -11,7 +11,7 @@ use Illuminate\Contracts\Foundation\Application;
 class ServiceRegistrationService {
 
 
-    public static function registerService()
+    /* public static function registerService()
     {
       Log::info("Attempting to register product service...");
 
@@ -31,7 +31,7 @@ class ServiceRegistrationService {
       } else {
           return false;
       }
-    }
+    } */
 }
 
 
