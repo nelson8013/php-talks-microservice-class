@@ -19,7 +19,7 @@ class ServiceDiscoveryService
   return $this->serviceRegistryRepository->services();
  }
 
- public function checkA()
+/*  public function checkA()
  {
     $services = $this->serviceRegistryRepository->getRegistryFromCache();
 
@@ -61,7 +61,7 @@ class ServiceDiscoveryService
     $this->serviceRegistryRepository->update($services);
 
     return response()->json(['message' => 'Health checks performed']);
-}
+} */
 
 
 }
