@@ -13,11 +13,11 @@ class ServiceRegistrationServiceProvider extends ServiceProvider
      * Register services.
      */
     public function register(): void
-    {
+    {/* 
         $this->app->bind(ServiceRegistrationService::class, function () {
             Log::info("Inventory Service ServiceRegistrationServiceProvider booting...");
             return new ServiceRegistrationService();
-        });
+        }); */
     }
 
     /**
@@ -25,9 +25,9 @@ class ServiceRegistrationServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Log::info("Inventory Service ServiceRegistrationServiceProvider booting...");
+       /*  Log::info("Inventory Service ServiceRegistrationServiceProvider booting...");
         $serviceRegistrationService = $this->app->make(ServiceRegistrationService::class);
-        $serviceRegistrationService->registerService();
+        $serviceRegistrationService->registerService(); */
 
     }
 }

@@ -3,16 +3,20 @@
 namespace App\Service;
 
 use App\Repository\InventoryRepository;
+use App\Repository\ProductRepository;
 use App\Http\Requests\InventoryRequest;
 use App\Http\Requests\ProductQuantityRequest;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\InsufficientQuantityException;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\InventoryCreated;
 
 
 class InventoryService
 {
 
- public function __construct(private InventoryRepository $inventoryRepository){}
+ public function __construct(private InventoryRepository $inventoryRepository, private ProductRepository $productRepository){}
 
 
  public function doesInventoryAlreadyExist(int $id) : bool
@@ -20,12 +24,15 @@ class InventoryService
   return $this->inventoryRepository->existsByProductId($id);
  }
  public function create(InventoryRequest $request){
-    $response  = \Http::get("http://127.0.0.1:8000/api/product/exists/{$request->product_id}")->json();
-
-    if( $response["success"]) {
+    $response  = $this->doesInventoryProductExist($request->product_id); //Replacing the call to the product service
+    if( $response) {
       if(!$this->doesInventoryAlreadyExist($request->product_id)){
        $data = ['product_id' => $request->product_id, 'quantity' => $request->quantity,'is_available' => $request->is_available];
-       return $this->inventoryRepository->save($data);
+       $inventory = $this->inventoryRepository->save($data);
+
+       InventoryCreated::dispatch($inventory->toArray());
+       Log::info(":::DISPATCHED THE INVENTORY:::", $inventory->toArray());
+       return $inventory;
       }
       else{
        return true;
@@ -97,6 +104,11 @@ class InventoryService
       } catch (\Exception $exception) {
         throw $exception;
       }
+  }
+
+  public function doesInventoryProductExist(int $productId) : bool
+  {
+    return $this->productRepository->existsById($productId);
   }
 
 }

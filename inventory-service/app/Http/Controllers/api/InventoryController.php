@@ -5,13 +5,14 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryRequest;
 use App\Service\InventoryService;
+use App\Service\ProductService;
 use App\Service\HealthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\ProductQuantityRequest;
 
 class InventoryController extends Controller
 {
-    public function __construct(private InventoryService $inventoryService, private HealthService $healthService){}
+    public function __construct(private InventoryService $inventoryService, private ProductService $productService, private HealthService $healthService){}
 
 
     public function health()
@@ -66,4 +67,17 @@ class InventoryController extends Controller
         return response()->json(['data' => $subtractOperation, 'status' => false, 'message' => 'Quantity was not subtracted. The requested quantity may be more than available quantity, or the product Id may not exist.' ], 400);
  
     }
+
+    public function doesInventoryProductExist(int $id) : bool|JsonResponse
+    {
+        $product = $this->productService->existsById($id);
+        
+        if($product == 1){
+            return response()->json(['success' => true, 'message' => "Product exists",], 200);
+         }
+         else{
+            return response()->json(['success' => false, 'message' => "Product does not exists",], 404);
+         }
+    }
+
 }
