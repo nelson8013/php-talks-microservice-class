@@ -23,4 +23,8 @@ Route::controller(CartController::class)->prefix('checkout')->group( function(){
     Route::post('add',  'addToCart')->name('add');
     Route::get('carts', 'carts')->name('carts');
     Route::get('{id}',  'cart')->name('cart');
+
+    Route::get('inventory-product/{id}', 'inventoryProduct')->name('inventory-product');
+    Route::get('productExist/{id}',  'doesInventoryProductExist')->name('productExist');
+    Route::get('productPrice/{id}',   'inventoryProductPrice')->name('productPrice');
 });

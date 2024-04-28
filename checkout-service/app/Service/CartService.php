@@ -7,9 +7,12 @@ use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\ProductOutOfStockException;
 use App\Exceptions\EmptyCartException;
 use App\Exceptions\ProductQuantityNotSufficientException;
+use App\Exceptions\InsufficientQuantityException;
 use App\Interfaces\CartServiceInterface;
 use App\Repository\CartRepository;
 use App\Repository\CartItemRepository;
+use App\Repository\ProductRepository;
+use App\Repository\InventoryRepository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\Cart;
@@ -18,7 +21,7 @@ use Illuminate\Http\Request;
 
 class CartService  implements CartServiceInterface {
 
-    public function __construct(private CartRepository $cartRepository, private CartItemRepository $cartItemRepository){}
+    public function __construct(private CartRepository $cartRepository, private CartItemRepository $cartItemRepository, private ProductRepository $productRepository, private InventoryRepository $inventoryRepository){}
 
 
     public function carts(){
@@ -56,10 +59,10 @@ class CartService  implements CartServiceInterface {
       $results = [];
  
       foreach($productIdsAndQuantities as $productId => $quantity) {
-       $productResponse =  Http::get("http://127.0.0.1:8000/api/product/exists/{$productId}")->json();
+       $productResponse =  $this->doesInventoryProductExist($productId); // Replaces the call to the product service
  
-       if( $productResponse['success']) {
- 
+       if( $productResponse) {
+         
           $results[$productId] = $quantity;
           
        }else{
@@ -73,9 +76,9 @@ class CartService  implements CartServiceInterface {
       
       foreach($productIdsAndQuantities as $productId => $quantity) {
 
-         $checkAvailableProductResponse =  Http::get("http://127.0.0.1:8001/api/inventory/quantity/{$productId}")->json();
+         $checkAvailableProductResponse =  $this->getProductQuantity($productId); // Replaces the call to the Inventory service
 
-         if( $checkAvailableProductResponse['data'] >= $quantity) {
+         if( $checkAvailableProductResponse->quantity >= $quantity) {
   
             return true;
 
@@ -147,6 +150,61 @@ class CartService  implements CartServiceInterface {
              
     }
 
+   /* Copy of method from the Product Service Team */
+    public function doesInventoryProductExist(int $productId) : bool
+    {
+      return $this->productRepository->existsById($productId);
+    }
+
+
+   /* Copy of methodd from the Inventory Service Team */
+
+    public function doesInventoryAlreadyExist(int $id) : bool
+    {
+     return $this->inventoryRepository->existsByProductId($id);
+    }
+
+    public function getProductQuantity(int $productId) : int|object
+    {
+      try{
+          return $this->inventoryRepository->findProductQuantity($productId);
+    
+      }catch (ProductNotFoundException $exception) {
+    
+        return response()->json([
+            'error' => 'Product Not Found',
+            'message' => $exception->getMessage(),
+        ], 404);
+    
+      } catch (\Exception $exception) {
+        
+          return response()->json([
+              'error' => 'Product Not Found',
+              'message' => $exception->getMessage(),
+          ], 500);
+      }
+     }
+
+   public function subtractQuantityAndUpdate(int $productId, int $quantityToSubtract): bool
+   {
+            try {
+               $currentQuantity = $this->inventoryRepository->findProductQuantity($productId);
+
+               if ($currentQuantity >= $quantityToSubtract) {
+                  $newQuantity = $currentQuantity - $quantityToSubtract;
+
+                  $this->inventoryRepository->updateProductInventory($productId, $newQuantity);
+
+                  return true;
+               } else {
+                  throw new InsufficientQuantityException("Insufficient quantity available for product ID: {$productId}");
+               }
+            } catch (ProductNotFoundException $exception) {
+            throw $exception;
+            } catch (\Exception $exception) {
+            throw $exception;
+            }
+      }
 
     
 

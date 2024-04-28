@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddToCartRequest;
 use App\Service\CartService;
+use App\Service\ProductService;
 use App\Service\HealthService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +17,7 @@ class CartController extends Controller
 {
     
 
-    public function __construct(private CartService $cartService, private HealthService $healthService){}
+    public function __construct(private CartService $cartService, private HealthService $healthService, private ProductService $productService ){}
 
 
     public function health()
@@ -56,6 +57,11 @@ class CartController extends Controller
     public function cart(int $id) : JsonResponse {
         $cart = $this->cartService->cart($id);
         return response()->json(['carts' => $cart,'message' => 'Cart retrieved successfully'],200);
+    }
+
+    public function inventoryProductPrice(int $id)
+    {
+        return  $this->productService->getProductPrice($id);
     }
 
 }
