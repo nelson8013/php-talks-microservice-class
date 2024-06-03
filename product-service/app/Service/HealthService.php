@@ -13,7 +13,7 @@ class HealthService {
  public function health()
     {
         $status = 'healthy';
-        Log::info("PRODUCT:-THEY CAME HERE");
+        Log::info("PRODUCT:-Java CAME HERE");
         // TODO: @Nelson, Perform any necessary health checks
         // For example, check database connectivity, external dependencies, etc.
 

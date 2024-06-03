@@ -19,7 +19,7 @@ class ServiceRegistrationService {
       $servicePort =  8002;
       $serviceUrl  = "http://127.0.0.1:$servicePort/api/checkout/"; 
 
-      $response = Http::post('http://127.0.0.1:8003/api/gate/register', [
+      $response = Http::post('http://127.0.0.1:5634/api/gate/register', [
           'name' => $serviceName,
           'url'  => $serviceUrl,
           'port' => $servicePort,
